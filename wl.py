@@ -15,6 +15,7 @@ from commands.open_note import open_note
 from commands.start_ticket import start_ticket
 from commands.finish_ticket import finish_ticket
 from commands.add_task import add_task
+from commands.last_note import last_note
 
 
 @click.group(invoke_without_command=True)
@@ -65,6 +66,12 @@ def task(task_description, date):
 def today(date):
     """Open today's note in nvim (alias for open)"""
     open_note(date)
+
+
+@cli.command()
+def last():
+    """Open the most recent daily note that is not today"""
+    last_note()
 
 
 if __name__ == '__main__':
