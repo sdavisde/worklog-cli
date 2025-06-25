@@ -42,6 +42,15 @@ wl fin AB#12345
 # Add a task
 wl task "Fix bug in login flow"
 
+# Interactive task management
+wl tasks
+
+# View previous day's note
+wl last
+
+# Add to ## Notes section
+wl note "Test note"
+
 # Open a specific date
 wl open --date 2025-01-15
 ```
@@ -49,20 +58,23 @@ wl open --date 2025-01-15
 ## 📁 Project Structure
 
 ```
-worklist/
+worklog/
 ├── wl.py                 # Main CLI entry point
 ├── commands/             # Subcommand modules
 │   ├── __init__.py
 │   ├── open_note.py
 │   ├── start_ticket.py
 │   ├── finish_ticket.py
-│   └── add_task.py
+│   ├── add_task.py
+│   ├── tasks_list.py     # Interactive task management
+│   ├── last_note.py
+│   └── add_note.py
 ├── core/                 # Core functionality
 │   ├── __init__.py
 │   ├── config.py         # Configuration management
 │   ├── note_manager.py   # Note file operations
 │   ├── ticket_utils.py   # Azure DevOps integration
-│   └── parser.py         # Markdown parsing
+│   └── parser.py         # Markdown parsing & formatting
 ├── templates/
 │   └── daily.md          # Daily note template
 ├── utils/
@@ -110,7 +122,7 @@ Each daily note follows this structure:
 ## Tasks
 
 - [ ] Fix bug in login flow
-- [ ] Update documentation
+- [x] Update documentation
 
 ## Notes
 
@@ -153,6 +165,38 @@ wl task "Fix bug in login flow"
 wl task "Update API documentation"
 ```
 
+### `wl tasks`
+
+Interactive task management. Shows a list of all tasks for the day with checkboxes that you can toggle using arrow keys and Enter.
+
+**Features:**
+
+- ☐ Shows incomplete tasks
+- ☑ Shows completed tasks
+- Use arrow keys to navigate
+- Press Enter to toggle task completion
+- Automatically saves changes to your daily note
+- Clean formatting with no extra spacing
+
+**Options:**
+
+- `--date`: Specify date in YYYY-MM-DD format
+
+**Example:**
+
+```bash
+wl tasks
+wl tasks --date 2025-01-15
+```
+
+### `wl note "<text>"`
+
+Adds a note to the "Notes" section.
+
+### `wl last`
+
+Opens the most recent daily note that is not today.
+
 ## 🧠 AI-Ready Design
 
 The tool is designed with future AI integration in mind:
@@ -160,6 +204,7 @@ The tool is designed with future AI integration in mind:
 - **Structured Data**: Consistent markdown format for easy parsing
 - **Sectioned Content**: Clear separation of work types
 - **Standardized Format**: Predictable structure for LLM processing
+- **Interactive Management**: Easy task completion tracking
 - **Future Commands**: Ready for `wl summary`, `wl achievements`, etc.
 
 ## 🛠️ Development
@@ -175,7 +220,7 @@ The tool is designed with future AI integration in mind:
 - **`config.py`**: Manages settings and paths
 - **`note_manager.py`**: Handles file operations
 - **`ticket_utils.py`**: Azure DevOps integration
-- **`parser.py`**: Markdown manipulation
+- **`parser.py`**: Markdown parsing & formatting with smart spacing
 
 ### Testing
 
@@ -184,10 +229,12 @@ The tool is designed with future AI integration in mind:
 python wl.py --help
 python wl.py open
 python wl.py start AB#12345
+python wl.py tasks
 ```
 
 ## 🚧 Future Features
 
+- [x] Interactive task management (`wl tasks`)
 - [ ] Time tracking (`wl time start|stop`)
 - [ ] Cross-day summaries (`wl summary --since 30d`)
 - [ ] Tagging system (`wl tag AB#12345 priority:high`)
