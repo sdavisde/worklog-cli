@@ -21,63 +21,51 @@ def tasks_list(date_str=None):
     try:
         date = parse_date(date_str) if date_str else None
         
-        # Load the note
-        content, parser = note_manager.load_note(date)
-        
-        # Get tasks from the Tasks section
-        task_lines = parser.get_section_content('Tasks')
-        
-        if not task_lines:
-            print("No tasks found for this date.")
-            return 0
-        
-        # Parse tasks and their completion status
-        tasks = []
-        for line in task_lines:
-            line = line.strip()
-            if line.startswith('- ['):
-                # Extract completion status and description
-                if line.startswith('- [x]') or line.startswith('- [X]'):
-                    completed = True
-                    description = line[5:].strip()
-                elif line.startswith('- [ ]'):
-                    completed = False
-                    description = line[5:].strip()
-                else:
-                    # Handle other formats (like "- ] task" from add_task)
-                    completed = False
-                    description = line[3:].strip()
-                
-                tasks.append({
-                    'line': line,
-                    'completed': completed,
-                    'description': description
-                })
-        
-        if not tasks:
-            print("No tasks found for this date.")
-            return 0
-        
-        # Create interactive choices
-        choices = []
-        for i, task in enumerate(tasks):
-            status = "☑" if task['completed'] else "☐"
-            choices.append({
-                'name': f"{status} {task['description']}",
-                'value': i
-            })
-        
-        # Add exit option
-        choices.append({
-            'name': "Exit",
-            'value': -1
-        })
-        
         while True:
-            # Show the task list
+            # Load the note and get tasks
+            content, parser = note_manager.load_note(date)
+            task_lines = parser.get_section_content('Tasks')
+            
+            if not task_lines:
+                print("No tasks found for this date.")
+                return 0
+            
+            # Parse tasks and their completion status
+            tasks = []
+            for line in task_lines:
+                line = line.strip()
+                if line.startswith('- ['):
+                    if line.startswith('- [x]') or line.startswith('- [X]'):
+                        completed = True
+                        description = line[5:].strip()
+                    elif line.startswith('- [ ]'):
+                        completed = False
+                        description = line[5:].strip()
+                    else:
+                        completed = False
+                        description = line[3:].strip()
+                    tasks.append({
+                        'line': line,
+                        'completed': completed,
+                        'description': description
+                    })
+            
+            if not tasks:
+                print("No tasks found for this date.")
+                return 0
+            
+            # Create interactive choices
+            choices = []
+            for i, task in enumerate(tasks):
+                status = "☑" if task['completed'] else "☐"
+                choices.append({
+                    'name': f"{status} {task['description']}",
+                    'value': i
+                })
+            choices.append({'name': "Exit", 'value': -1})
+            
             date_display = date.strftime('%Y-%m-%d') if date else 'today'
             print(f"\nTasks for {date_display}:\n")
-            
             selected = questionary.select(
                 "Select a task to toggle:",
                 choices=choices
@@ -88,30 +76,16 @@ def tasks_list(date_str=None):
             
             # Toggle the selected task
             task = tasks[selected]
-            task['completed'] = not task['completed']
+            new_completed = not task['completed']
+            new_line = f"- [x] {task['description']}" if new_completed else f"- [ ] {task['description']}"
             
-            # Update the task line
-            if task['completed']:
-                new_line = f"- [x] {task['description']}"
-            else:
-                new_line = f"- [ ] {task['description']}"
-            
-            # Update the content
+            # Remove the old line and add the new one
             updated_content = parser.remove_from_section('Tasks', task['line'])
             updated_parser = parse_markdown(updated_content)
             final_content = updated_parser.add_to_section('Tasks', new_line, deduplicate=False)
-            
-            # Save the updated note
             note_manager.save_note(final_content, date)
             
-            # Update the choices for next iteration
-            status = "☑" if task['completed'] else "☐"
-            choices[selected]['name'] = f"{status} {task['description']}"
-            
-            # Update the task object
-            task['line'] = new_line
-            
-            print(f"Task '{task['description']}' marked as {'completed' if task['completed'] else 'incomplete'}")
+            print(f"Task '{task['description']}' marked as {'completed' if new_completed else 'incomplete'}")
         
         return 0
         

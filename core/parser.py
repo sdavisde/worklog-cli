@@ -193,7 +193,7 @@ class MarkdownParser:
         
         Args:
             section_name (str): Section name
-            item (str): Item to remove (can be partial match)
+            item (str): Item to remove (exact match)
             
         Returns:
             str: Updated content
@@ -202,10 +202,10 @@ class MarkdownParser:
         if start_line == -1:
             return self.content
         
-        # Find and remove the item
+        # Find and remove the item (exact match)
         for i in range(start_line + 1, end_line):
             line = self.lines[i].strip()
-            if line and item in line:
+            if line and line == item:
                 self.lines.pop(i)
                 
                 # Clean up extra empty lines if the removed item was followed by one
