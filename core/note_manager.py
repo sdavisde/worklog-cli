@@ -168,6 +168,20 @@ class NoteManager:
         
         updated_content = parser.add_to_section('Tasks', task_line)
         self.save_note(updated_content, date)
+    
+    def add_note(self, note_text, date=None):
+        """
+        Add a note to the Notes section
+        
+        Args:
+            note_text (str): Note text to add
+            date: Date for the note (default: today)
+        """
+        content, parser = self.load_note(date)
+        note_line = f"- {note_text}"
+        
+        updated_content = parser.add_to_section('Notes', note_line)
+        self.save_note(updated_content, date)
 
 
 # Global note manager instance

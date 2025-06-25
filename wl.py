@@ -15,7 +15,9 @@ from commands.open_note import open_note
 from commands.start_ticket import start_ticket
 from commands.finish_ticket import finish_ticket
 from commands.add_task import add_task
+from commands.tasks_list import tasks_list
 from commands.last_note import last_note
+from commands.add_note import add_note
 
 
 @click.group(invoke_without_command=True)
@@ -58,6 +60,21 @@ def fin(ticket, date):
 def task(task_description, date):
     """Add a task to the Tasks section"""
     add_task(task_description, date)
+
+
+@cli.command()
+@click.option('--date', default=None, help='Date in YYYY-MM-DD format (default: today)')
+def tasks(date):
+    """Show interactive task list"""
+    tasks_list(date)
+
+
+@cli.command()
+@click.argument('note_text')
+@click.option('--date', default=None, help='Date in YYYY-MM-DD format (default: today)')
+def note(note_text, date):
+    """Add a note to the Notes section"""
+    add_note(note_text, date)
 
 
 # Alias for open command

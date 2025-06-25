@@ -25,12 +25,13 @@ class Config:
     def get_note_path(self, date=None):
         """Get the path for a note file for the given date"""
         from utils.date import parse_date
+        from datetime import date as date_cls, datetime as datetime_cls
         
         if date is None:
-            from datetime import datetime
-            date = datetime.today()
-        else:
+            date = datetime_cls.today()
+        elif isinstance(date, str):
             date = parse_date(date)
+        # else, assume it's already a date or datetime object
         
         return self.data_dir / f"{date.strftime('%Y-%m-%d')}.md"
     

@@ -72,6 +72,26 @@ class MarkdownParser:
         
         return content_lines
     
+    def cleanup_section_spacing(self, section_name: str) -> None:
+        """
+        Clean up excessive empty lines in a section
+        
+        Args:
+            section_name (str): Section name to clean up
+        """
+        start_line, end_line = self.find_section(section_name)
+        if start_line == -1:
+            return
+        
+        # Get the section content lines
+        section_lines = self.lines[start_line + 1:end_line]
+        
+        # Remove all empty lines
+        cleaned_lines = [line for line in section_lines if line.strip()]
+        
+        # Replace the section content
+        self.lines[start_line + 1:end_line] = cleaned_lines
+
     def add_to_section(self, section_name: str, new_line: str, deduplicate: bool = True) -> str:
         """
         Add a line to a section, creating the section if it doesn't exist
@@ -108,9 +128,25 @@ class MarkdownParser:
             self.lines.insert(insert_pos + 1, f'## {section_name}')
             self.lines.insert(insert_pos + 2, '')
             self.lines.insert(insert_pos + 3, new_line)
+            self.lines.insert(insert_pos + 4, '')  # Add newline after the inserted line
         else:
+            # Clean up existing section spacing first
+            self.cleanup_section_spacing(section_name)
+            
+            # Re-find the section after cleanup
+            start_line, end_line = self.find_section(section_name)
+            
             # Insert at the end of existing section
+            # Check if there's already an empty line at the end of the section
+            has_trailing_newline = False
+            if end_line > 0 and end_line < len(self.lines):
+                has_trailing_newline = not self.lines[end_line - 1].strip()
+            
             self.lines.insert(end_line, new_line)
+            
+            # Only add newline if there isn't already one
+            if not has_trailing_newline:
+                self.lines.insert(end_line + 1, '')  # Add newline after the inserted line
         
         return '\n'.join(self.lines)
     
@@ -171,6 +207,11 @@ class MarkdownParser:
             line = self.lines[i].strip()
             if line and item in line:
                 self.lines.pop(i)
+                
+                # Clean up extra empty lines if the removed item was followed by one
+                if i < len(self.lines) and not self.lines[i].strip():
+                    self.lines.pop(i)
+                
                 break
         
         return '\n'.join(self.lines)
