@@ -1,7 +1,15 @@
 # {{DATE}}
 
-## Finished Work
-
 ## Tasks
+
+### Priority
+
+### Support
+
+### Project Management
+
+### Engineering
+
+### Intake
 
 ## Notes

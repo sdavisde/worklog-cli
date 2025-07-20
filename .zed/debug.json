@@ -1,0 +1,18 @@
+// Project-local debug tasks
+//
+// For more documentation on how to configure debug tasks,
+// see: https://zed.dev/docs/debugger
+[
+  {
+    "label": "Debug - Adding a Task",
+    "build": {
+      "command": "cargo",
+      "args": ["build"]
+    },
+    "program": "target/debug/worklog-cli",
+    "sourceLanguages": ["rust"],
+    "request": "launch",
+    "adapter": "CodeLLDB",
+    "args": ["task", "Test"]
+  }
+]

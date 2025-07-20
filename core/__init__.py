@@ -1,1 +1,0 @@
-# Core package for worklog CLI tool 

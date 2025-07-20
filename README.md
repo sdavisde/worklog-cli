@@ -6,24 +6,23 @@ A modular CLI tool for daily task and time tracking with simple Markdown-based n
 
 ### Installation
 
-1. **Clone and install dependencies:**
+#### Option 1: Install from crates.io (Recommended)
+```bash
+cargo install worklog-cli
+```
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+#### Option 2: Build from source
+```bash
+git clone https://github.com/sdavisde/worklog-cli
+cd worklog-cli
+cargo build --release
+# Binary will be in target/release/worklog-cli
+```
 
-2. **Configure Azure DevOps (optional):**
-
-   ```bash
-   cp env.example .env
-   # Edit .env with your ADO organization and project
-   ```
-
-3. **Make it globally accessible (optional):**
-   ```bash
-   # Add to your PATH or create an alias
-   alias wl="python /path/to/worklist/wl.py"
-   ```
+#### Option 3: Install from git
+```bash
+cargo install --git https://github.com/sdavisde/worklog-cli
+```
 
 ### Basic Usage
 
@@ -33,76 +32,37 @@ wl open
 # or just
 wl
 
-# Start working on a ticket
-wl start AB#12345
-
-# Finish a ticket (moves from In Progress to Finished Work)
-wl fin AB#12345
-
 # Add a task
 wl task "Fix bug in login flow"
 
-# Interactive task management
+# Interactive task management (todo)
 wl tasks
 
 # View previous day's note
 wl last
 
-# Add to ## Notes section
+# Add to ## Notes section (todo)
 wl note "Test note"
 
-# Open a specific date
+# Open a specific date (todo)
 wl open --date 2025-01-15
-```
-
-## 📁 Project Structure
-
-```
-worklog/
-├── wl.py                 # Main CLI entry point
-├── commands/             # Subcommand modules
-│   ├── __init__.py
-│   ├── open_note.py
-│   ├── start_ticket.py
-│   ├── finish_ticket.py
-│   ├── add_task.py
-│   ├── tasks_list.py     # Interactive task management
-│   ├── last_note.py
-│   └── add_note.py
-├── core/                 # Core functionality
-│   ├── __init__.py
-│   ├── config.py         # Configuration management
-│   ├── note_manager.py   # Note file operations
-│   ├── ticket_utils.py   # Azure DevOps integration
-│   └── parser.py         # Markdown parsing & formatting
-├── templates/
-│   └── daily.md          # Daily note template
-├── utils/
-│   ├── __init__.py
-│   └── date.py           # Date utilities
-├── requirements.txt
-├── env.example
-└── README.md
 ```
 
 ## ⚙️ Configuration
 
-### Environment Variables
+### Config.yaml
 
-Create a `.env` file in the project root:
+Edit `~/.worklog/config.yaml` to customize the behavior of worklog.
 
-```bash
-# Azure DevOps Configuration
-ADO_ORG=your-organization-name
-ADO_PROJECT=your-project-name
+```yaml
+# Default Config
 
-# Editor preference (optional, defaults to nvim)
-EDITOR=nvim
+editor_command: nvim
 ```
 
 ### Data Storage
 
-Notes are stored in `~/.worklog/` with the format `YYYY-MM-DD.md`.
+Notes are stored in `~/.worklog/daily-notes/` with the format `YYYY-MM-DD.md`.
 
 ## 📝 Daily Note Format
 
@@ -111,91 +71,20 @@ Each daily note follows this structure:
 ```markdown
 # 2025-01-15
 
-## In Progress
-
-- [AB#12345](https://dev.azure.com/org/project/_workitems/edit/12345)
-
-## Finished Work
-
-- [AB#12346](https://dev.azure.com/org/project/_workitems/edit/12346)
-
 ## Tasks
 
 - [ ] Fix bug in login flow
 - [x] Update documentation
 
+### Intake
+
+<!-- Where quick-add tasks are added for later triaging into the tasks section -->
+- [ ] Where
+
 ## Notes
 
 Meeting with team about new features.
 ```
-
-## 🔧 Commands
-
-### `wl open` or `wl`
-
-Opens today's note in the configured editor (default: nvim).
-
-**Options:**
-
-- `--date`: Specify date in YYYY-MM-DD format
-
-### `wl start <ticket>`
-
-Adds a ticket to the "In Progress" section.
-
-**Examples:**
-
-```bash
-wl start AB#12345
-wl start ABC#67890
-```
-
-### `wl fin <ticket>`
-
-Moves a ticket from "In Progress" to "Finished Work".
-
-### `wl task "<description>"`
-
-Adds a task to the "Tasks" section.
-
-**Examples:**
-
-```bash
-wl task "Fix bug in login flow"
-wl task "Update API documentation"
-```
-
-### `wl tasks`
-
-Interactive task management. Shows a list of all tasks for the day with checkboxes that you can toggle using arrow keys and Enter.
-
-**Features:**
-
-- ☐ Shows incomplete tasks
-- ☑ Shows completed tasks
-- Use arrow keys to navigate
-- Press Enter to toggle task completion
-- Automatically saves changes to your daily note
-- Clean formatting with no extra spacing
-
-**Options:**
-
-- `--date`: Specify date in YYYY-MM-DD format
-
-**Example:**
-
-```bash
-wl tasks
-wl tasks --date 2025-01-15
-```
-
-### `wl note "<text>"`
-
-Adds a note to the "Notes" section.
-
-### `wl last`
-
-Opens the most recent daily note that is not today.
 
 ## 🧠 AI-Ready Design
 
@@ -209,42 +98,39 @@ The tool is designed with future AI integration in mind:
 
 ## 🛠️ Development
 
-### Adding New Commands
-
-1. Create a new file in `commands/`
-2. Implement the command function
-3. Add the command to `wl.py`
-
-### Core Modules
-
-- **`config.py`**: Manages settings and paths
-- **`note_manager.py`**: Handles file operations
-- **`ticket_utils.py`**: Azure DevOps integration
-- **`parser.py`**: Markdown parsing & formatting with smart spacing
-
-### Testing
+### Building and Testing
 
 ```bash
-# Test basic functionality
-python wl.py --help
-python wl.py open
-python wl.py start AB#12345
-python wl.py tasks
+# Build the project
+cargo build
+
+# Run tests
+# cargo test
+
+# Run the CLI locally
+cargo run -- --help
+cargo run -- open
+`cargo run -- tasks
 ```
+
+### Adding New Commands
+
+1. Create a new module in `src/commands/`
+2. Implement the command using clap derive macros
+3. Add the command to the main CLI enum in `src/main.rs`
+
+### Core Architecture
+
+Built with modern Rust practices:
+- **Clap**: Command-line argument parsing with derive macros
+- **Chrono**: Date and time handling
+- **Serde**: Configuration and data serialization
+- **Error handling**: Result types and proper error propagation
 
 ## 🚧 Future Features
 
-- [x] Interactive task management (`wl tasks`)
-- [ ] Time tracking (`wl time start|stop`)
+- [ ] Interactive task management (`wl tasks`)
 - [ ] Cross-day summaries (`wl summary --since 30d`)
 - [ ] Tagging system (`wl tag AB#12345 priority:high`)
 - [ ] Work review (`wl review`)
 - [ ] AI-powered insights and suggestions
-
-## 📄 License
-
-This project is open source. Feel free to contribute!
-
-```
-
-```
