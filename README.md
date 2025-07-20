@@ -6,9 +6,11 @@ A modular CLI tool for daily task and time tracking with simple Markdown-based n
 
 ### Installation
 
-#### Option 1: Install from crates.io (Recommended)
+> With either option, `wl` will be added as an executable command on your PATH
+
+#### Option 1: Install from GitHub (Recommended)
 ```bash
-cargo install worklog-cli
+cargo install --git https://github.com/sdavisde/worklog-cli
 ```
 
 #### Option 2: Build from source
@@ -17,11 +19,6 @@ git clone https://github.com/sdavisde/worklog-cli
 cd worklog-cli
 cargo build --release
 # Binary will be in target/release/worklog-cli
-```
-
-#### Option 3: Install from git
-```bash
-cargo install --git https://github.com/sdavisde/worklog-cli
 ```
 
 ### Basic Usage
