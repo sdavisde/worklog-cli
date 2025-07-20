@@ -26,6 +26,7 @@ pub fn insert_line_in_markdown(file_path: &PathBuf, new_line: &str, target_heade
     let mut result = Vec::new();
     let mut in_target_section = false;
     let mut target_section_found = false;
+    let mut line_inserted = false;
 
     for (i, line) in lines.iter().enumerate() {
         if line.starts_with(target_header) {
@@ -33,23 +34,27 @@ pub fn insert_line_in_markdown(file_path: &PathBuf, new_line: &str, target_heade
             target_section_found = true;
             result.push(line.to_string());
         } else if in_target_section && line.starts_with(&stop_section_heading_prefix) {
-            // Found next H2 section, insert task before this
+            // Found next section, insert line before this
+            result.pop();
             result.push(new_line.to_string());
             result.push("".to_string()); // Ensure blank line after
             result.push(line.to_string());
             in_target_section = false;
+            line_inserted = true;
         } else if in_target_section && i == lines.len() - 1 {
-            // Last line and still in tasks section
+            // Last line and still in target section
+            result.pop();
             result.push(line.to_string());
             result.push(new_line.to_string());
             result.push("".to_string()); // Ensure blank line after
+            line_inserted = true;
         } else {
             result.push(line.to_string());
         }
     }
 
-    // If Tasks section was found but no next H2, and we didn't hit end-of-file case
-    if target_section_found && in_target_section && !result.last().map_or(false, |l| l == new_line) {
+    // If target section was found but line wasn't inserted yet (e.g., empty section at end of file)
+    if target_section_found && in_target_section && !line_inserted {
         result.push(new_line.to_string());
         result.push("".to_string());
     }

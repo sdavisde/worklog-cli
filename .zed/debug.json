@@ -13,6 +13,18 @@
     "sourceLanguages": ["rust"],
     "request": "launch",
     "adapter": "CodeLLDB",
-    "args": ["task", "Test"]
+    "args": ["task", "Test task"]
+  },
+  {
+    "label": "Debug - Adding a Note",
+    "build": {
+      "command": "cargo",
+      "args": ["build"]
+    },
+    "program": "target/debug/worklog-cli",
+    "sourceLanguages": ["rust"],
+    "request": "launch",
+    "adapter": "CodeLLDB",
+    "args": ["note", "Test note"]
   }
 ]

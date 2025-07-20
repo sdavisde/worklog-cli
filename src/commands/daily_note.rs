@@ -134,3 +134,4 @@ pub fn get_daily_note_path() -> PathBuf {
         .join("daily_notes")
         .join(format!("{}.md", today_date));
 }
+
