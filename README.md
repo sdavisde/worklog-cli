@@ -32,9 +32,6 @@ wl
 # Add a task
 wl task "Fix bug in login flow"
 
-# Interactive task management (todo)
-wl tasks
-
 # View previous day's note
 wl last
 
@@ -55,6 +52,8 @@ Edit `~/.worklog/config.yaml` to customize the behavior of worklog.
 # Default Config
 
 editor_command: nvim
+
+# todo: allow configuration of daily note template
 ```
 
 ### Data Storage
