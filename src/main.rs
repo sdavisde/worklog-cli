@@ -1,19 +1,8 @@
 use clap::{Parser, Subcommand};
 
 mod config;
-#[path = "commands/daily_note.rs"]
-mod daily_note;
-#[path = "commands/note.rs"]
-mod note;
-#[path = "commands/task.rs"]
-mod task;
 mod utils;
-
-use daily_note::open_daily_note;
-use task::add_task;
-use note::add_note;
-
-use crate::daily_note::open_last_daily_note;
+mod commands;
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -50,22 +39,22 @@ fn main() {
     // matches just as you would the top level cmd
     match &cli.command {
         Some(Commands::Open) | None => {
-            open_daily_note(config).expect("Failed to open daily note");
+            commands::daily_note::open_daily_note(config).expect("Failed to open daily note");
         }
         Some(Commands::Last) => {
-            open_last_daily_note(config).expect("Failed to open last daily note");
+            commands::daily_note::open_last_daily_note(config).expect("Failed to open last daily note");
         }
         Some(Commands::Task { description }) => {
             if description.is_empty() {
                 println!("Cannot add a task without a <description>");
             }
-            add_task(description);
+            commands::task::add_task(description);
         }
         Some(Commands::Note { description }) => {
             if description.is_empty() {
                 println!("Cannot add a note without a <description>");
             }
-            add_note(description);
+            commands::note::add_note(description);
         }
     }
 

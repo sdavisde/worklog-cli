@@ -2,7 +2,7 @@ use std::{fs, path::PathBuf, process::Command};
 
 use chrono::NaiveDate;
 
-use crate::{config::Config, utils::get_today_date};
+use crate::{config::Config, utils::time::get_today_date};
 
 pub fn open_daily_note(config: Config) -> Result<String, String> {
     let daily_note_path = get_daily_note_path();
@@ -134,4 +134,3 @@ pub fn get_daily_note_path() -> PathBuf {
         .join("daily_notes")
         .join(format!("{}.md", today_date));
 }
-

@@ -1,6 +1,6 @@
 use std::fs;
 
-use crate::{daily_note::{create_daily_note_if_not_exists, get_daily_note_path}, utils::insert_line_in_markdown};
+use crate::{commands::daily_note::{create_daily_note_if_not_exists, get_daily_note_path}, utils::markdown::insert_line_in_markdown};
 
 pub fn add_note(note: &str) {
     let daily_note_path = get_daily_note_path();

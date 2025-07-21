@@ -25,12 +25,14 @@ cargo build --release
 
 ```bash
 # Open today's note in nvim
+# TODO: this command should cut all unfinished tasks from the previous note and add them to the current days note
 wl open
 # or just
 wl
 
 # Add a task
 wl task "Fix bug in login flow"
+# TODO: I put these in "Intake" because i think it'll make sense to do that for work, but it'd be nice for this to be customizable
 
 # View previous day's note
 wl last

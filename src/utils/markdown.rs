@@ -1,11 +1,5 @@
 use std::{fs, path::PathBuf};
 
-use chrono::Local;
-
-pub fn get_today_date() -> String {
-    return Local::now().format("%Y-%m-%d").to_string();
-}
-
 /**
  * Dynamic fn to add a line to the end of a section in markdown
  * @param file_path: &PathBuf - Path to the markdown file
