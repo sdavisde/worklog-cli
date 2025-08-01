@@ -2,11 +2,13 @@ use std::{fs, path::PathBuf, process::Command};
 
 use chrono::NaiveDate;
 
-use crate::{config::Config, utils::time::get_today_date};
+use crate::{config::Config, utils::{markdown::{MarkdownBlock, MarkdownFile}, time::{get_today_date}}};
 
-pub fn open_daily_note(config: Config) -> Result<String, String> {
+// todo: eventually, it'd be nice to have a struct/impl like "DailyNote"
+
+pub fn open_daily_note(config: Config, create_fresh: bool) -> Result<String, String> {
     let daily_note_path = get_daily_note_path();
-    create_daily_note_if_not_exists(&daily_note_path)?;
+    create_daily_note_if_not_exists(&daily_note_path, create_fresh)?;
 
     let mut daily_note_cmd = Command::new(&config.editor_command);
     daily_note_cmd.arg(daily_note_path);
@@ -23,17 +25,29 @@ pub fn open_daily_note(config: Config) -> Result<String, String> {
     return Ok("Success".to_string());
 }
 
-pub fn create_daily_note_if_not_exists(daily_note_path: &PathBuf) -> Result<(), String> {
+pub fn create_daily_note_if_not_exists(daily_note_path: &PathBuf, create_fresh: bool) -> Result<MarkdownFile, String> {
     if daily_note_path.exists() {
-        return Ok(());
+        return Ok(MarkdownFile::from_path(&daily_note_path));
     }
-    // Read template
-    let template = fs::read_to_string("templates/daily.md")
-        .map_err(|e| format!("Failed to read template: {}", e))?;
+
+    let last_note_path = get_last_daily_note_path();
+let today = get_today_date();
+
+    let note_source = if create_fresh || last_note_path.is_err() {
+        from_template_file()?
+    } else {
+        let last_note_file = MarkdownFile::from_path(&last_note_path.unwrap());
+        last_note_file.set_title(&today)
+    };
 
     // Replace {{DATE}} with actual date
-    let today = get_today_date();
-    let content = template.replace("{{DATE}}", &today);
+    let mut note = note_source.clone();
+    // update note header by replacing {{ DATE }} with today's date
+    if let MarkdownBlock::Heading(header) = &mut note.blocks[0] {
+        let mut new_header = header.clone();
+        new_header.content = new_header.content.replace("{{ DATE }}", &today);
+        note.blocks[0] = MarkdownBlock::Heading(new_header);
+    }
 
     // Create parent directory if needed
     if let Some(parent) = daily_note_path.parent() {
@@ -41,10 +55,10 @@ pub fn create_daily_note_if_not_exists(daily_note_path: &PathBuf) -> Result<(), 
     }
 
     // Write file
-    fs::write(daily_note_path, content)
+    fs::write(daily_note_path, note.to_string())
         .map_err(|e| format!("Failed to write daily note: {}", e))?;
 
-    Ok(())
+    Ok(note)
 }
 
 pub fn open_last_daily_note(config: Config) -> Result<String, String> {
@@ -126,11 +140,43 @@ fn get_last_daily_note_path() -> Result<PathBuf, String> {
 }
 
 pub fn get_daily_note_path() -> PathBuf {
+    let today_date = get_today_date();
+    get_note_path(&today_date)
+}
+
+fn get_note_path(date: &str) -> PathBuf {
     let home = std::env::var("HOME").expect("Failed to find HOME env variable");
 
-    let today_date = get_today_date();
     return PathBuf::from(&home)
         .join(".worklog")
         .join("daily_notes")
-        .join(format!("{}.md", today_date));
+        .join(format!("{}.md", date));
+}
+
+
+fn from_template_file() -> Result<MarkdownFile, String> {
+  // if the template file does not exist, we should create it with the default template
+  if !PathBuf::from("templates/daily.md").exists() {
+    fs::write("templates/daily.md", "# {{DATE}}
+
+## Tasks
+
+### Priority
+
+### Support
+
+### Project Management
+
+### Engineering
+
+### Intake
+
+## Notes
+
+    ").map_err(|e| format!("Failed to write template: {}", e))?;
+  }
+
+  let template = fs::read_to_string("templates/daily.md")
+    .map_err(|e| format!("Failed to read template: {}", e))?;
+  Ok(MarkdownFile::from_string(&template))
 }

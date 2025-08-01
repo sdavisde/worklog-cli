@@ -13,6 +13,10 @@ struct Cli {
 
     #[command(subcommand)]
     command: Option<Commands>,
+
+    // only used for root and open commands, to ensure daily note is made fresh from template
+    #[arg(long, default_value_t = false)]
+    fresh: bool
 }
 
 #[derive(Subcommand)]
@@ -39,7 +43,7 @@ fn main() {
     // matches just as you would the top level cmd
     match &cli.command {
         Some(Commands::Open) | None => {
-            commands::daily_note::open_daily_note(config).expect("Failed to open daily note");
+            commands::daily_note::open_daily_note(config, cli.fresh).expect("Failed to open daily note");
         }
         Some(Commands::Last) => {
             commands::daily_note::open_last_daily_note(config).expect("Failed to open last daily note");
@@ -47,14 +51,15 @@ fn main() {
         Some(Commands::Task { description }) => {
             if description.is_empty() {
                 println!("Cannot add a task without a <description>");
+            } else {
+                commands::task::add_task(description, cli.fresh);
             }
-            commands::task::add_task(description);
         }
         Some(Commands::Note { description }) => {
             if description.is_empty() {
                 println!("Cannot add a note without a <description>");
             }
-            commands::note::add_note(description);
+            commands::note::add_note(description, cli.fresh);
         }
     }
 
