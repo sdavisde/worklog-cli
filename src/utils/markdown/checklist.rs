@@ -4,7 +4,7 @@ use std::{fmt, sync::LazyLock};
 use crate::utils::markdown::MarkdownBlock;
 
 pub static CHECKLIST_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"^\s*[-*+]\s+\[([ x])\]\s+(.+)$").unwrap()
+    Regex::new(r"^\s*[-*+]\s+\[([ xX])\]\s+(.+?)\s*$").unwrap()
 });
 
 #[derive(Debug, Clone)]
@@ -55,7 +55,8 @@ pub fn parse_checklist(lines: &[&str], start_index: usize) -> (MarkdownBlock, us
         }
 
         if let Some(caps) = CHECKLIST_REGEX.captures(line) {
-            let checked = &caps[1] == "x";
+            let checkbox = &caps[1];
+            let checked = checkbox == "x" || checkbox == "X";
             let content = caps[2].to_string();
             items.push((checked, content));
             i += 1;

@@ -4,7 +4,7 @@ use std::{fmt, sync::LazyLock};
 use crate::utils::markdown::MarkdownBlock;
 
 pub static ORDERED_LIST_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"^\s*(\d+)\.\s+(.+)$").unwrap()
+    Regex::new(r"^\s*(\d+)\.\s+(.+?)\s*$").unwrap()
 });
 
 #[derive(Debug, Clone)]

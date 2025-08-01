@@ -4,7 +4,7 @@ use std::{fmt, sync::LazyLock};
 use crate::utils::markdown::MarkdownBlock;
 
 pub static HEADING_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"^(#{1,6})\s+(.+)$").unwrap()
+    Regex::new(r"^\s*(#{1,6})\s+(.+?)\s*$").unwrap()
 });
 
 #[derive(Debug, Clone)]

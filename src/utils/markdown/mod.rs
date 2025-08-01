@@ -84,16 +84,47 @@ impl MarkdownFile {
                 blocks.push(list_block);
                 i += consumed;
             }
-            // Default to paragraph
+            // Default to paragraph - collect consecutive non-markdown lines
             else {
-                blocks.push(MarkdownBlock::Paragraph(paragraph::Paragraph {
-                    content: line.to_string(),
-                }));
-                i += 1;
+                let (paragraph_block, consumed) = Self::parse_paragraph(&lines, i);
+                blocks.push(paragraph_block);
+                i += consumed;
             }
         }
 
         MarkdownFile { blocks }
+    }
+
+    fn parse_paragraph(lines: &[&str], start_index: usize) -> (MarkdownBlock, usize) {
+        let mut paragraph_lines = Vec::new();
+        let mut i = start_index;
+
+        while i < lines.len() {
+            let line = lines[i].trim();
+
+            // Stop if we hit an empty line
+            if line.is_empty() {
+                break;
+            }
+
+            // Stop if we hit a line that looks like other markdown elements
+            if heading::HEADING_REGEX.is_match(line)
+                || checklist::CHECKLIST_REGEX.is_match(line)
+                || unordered_list::UNORDERED_LIST_REGEX.is_match(line)
+                || ordered_list::ORDERED_LIST_REGEX.is_match(line)
+            {
+                break;
+            }
+
+            paragraph_lines.push(line);
+            i += 1;
+        }
+
+        let content = paragraph_lines.join(" ");
+        (
+            MarkdownBlock::Paragraph(paragraph::Paragraph { content }),
+            i - start_index,
+        )
     }
 
     pub fn to_string(&self) -> String {

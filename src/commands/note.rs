@@ -1,6 +1,6 @@
 use std::fs;
 
-use crate::{commands::daily_note::{create_daily_note_if_not_exists, get_daily_note_path}, utils::markdown::{unordered_list::UnorderedList, MarkdownBlock}};
+use crate::{commands::daily_note::{create_daily_note_if_not_exists, get_daily_note_path}, utils::markdown::{unordered_list::{UnorderedList, UnorderedListItem}, MarkdownBlock}};
 
 pub fn add_note(note: &str, create_fresh: bool) {
     let daily_note_path = get_daily_note_path();
@@ -24,11 +24,17 @@ pub fn add_note(note: &str, create_fresh: bool) {
         let note_list = daily_note.blocks.get(note_list_index);
         if let Some(MarkdownBlock::UnorderedList(note_list)) = note_list {
             let mut new_note_list = note_list.clone();
-            new_note_list.items.push(note.to_string());
+            new_note_list.items.push(UnorderedListItem {
+                content: note.to_string(),
+                indentation_level: 0,
+            });
             daily_note.blocks[note_list_index] = MarkdownBlock::UnorderedList(new_note_list);
         } else {
             let mut new_note_list_block = UnorderedList::new();
-            new_note_list_block.items.push(note.to_string());
+            new_note_list_block.items.push(UnorderedListItem {
+                content: note.to_string(),
+                indentation_level: 0,
+            });
             daily_note.blocks.insert(note_list_index, MarkdownBlock::UnorderedList(new_note_list_block));
         }
     }
