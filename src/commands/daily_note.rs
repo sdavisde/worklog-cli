@@ -27,7 +27,7 @@ pub fn open_daily_note(config: Config, create_fresh: bool) -> Result<String, Str
 
 pub fn create_daily_note_if_not_exists(daily_note_path: &PathBuf, create_fresh: bool) -> Result<MarkdownFile, String> {
     if daily_note_path.exists() {
-        return Ok(MarkdownFile::from_path(&daily_note_path));
+        return MarkdownFile::from_path(&daily_note_path).map_err(|e| e.to_string());
     }
 
     let last_note_path = get_last_daily_note_path();
@@ -36,7 +36,8 @@ let today = get_today_date();
     let note_source = if create_fresh || last_note_path.is_err() {
         from_template_file()?
     } else {
-        let last_note_file = MarkdownFile::from_path(&last_note_path.unwrap());
+        let last_note_file = MarkdownFile::from_path(&last_note_path.unwrap())
+            .map_err(|e| format!("Failed to read last note: {}", e))?;
         last_note_file.set_title(&today)
     };
 

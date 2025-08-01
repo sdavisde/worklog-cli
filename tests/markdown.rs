@@ -7,7 +7,7 @@ use worklog_cli::utils::markdown::*;
 fn test_parse_single_heading() {
     let content = "# Main Title\n";
     let temp_file = create_temp_file(content);
-    let file = MarkdownFile::from_path(&temp_file.path().to_path_buf());
+    let file = MarkdownFile::from_path(&temp_file.path().to_path_buf()).unwrap();
 
     assert_eq!(file.blocks.len(), 1);
     match &file.blocks[0] {
@@ -23,7 +23,7 @@ fn test_parse_single_heading() {
 fn test_parse_multiple_headings() {
     let content = "# Main Title\n## Subtitle\n### Sub-subtitle\n";
     let temp_file = create_temp_file(content);
-    let file = MarkdownFile::from_path(&temp_file.path().to_path_buf());
+    let file = MarkdownFile::from_path(&temp_file.path().to_path_buf()).unwrap();
 
     assert_eq!(file.blocks.len(), 3);
 
@@ -56,7 +56,7 @@ fn test_parse_multiple_headings() {
 fn test_parse_unordered_list() {
     let content = "- First item\n- Second item\n* Third item\n+ Fourth item\n";
     let temp_file = create_temp_file(content);
-    let file = MarkdownFile::from_path(&temp_file.path().to_path_buf());
+    let file = MarkdownFile::from_path(&temp_file.path().to_path_buf()).unwrap();
 
     assert_eq!(file.blocks.len(), 1);
     match &file.blocks[0] {
@@ -75,7 +75,7 @@ fn test_parse_unordered_list() {
 fn test_parse_ordered_list() {
     let content = "1. First item\n2. Second item\n3. Third item\n";
     let temp_file = create_temp_file(content);
-    let file = MarkdownFile::from_path(&temp_file.path().to_path_buf());
+    let file = MarkdownFile::from_path(&temp_file.path().to_path_buf()).unwrap();
 
     assert_eq!(file.blocks.len(), 1);
     match &file.blocks[0] {
@@ -93,7 +93,7 @@ fn test_parse_ordered_list() {
 fn test_parse_checklist() {
     let content = "- [ ] Todo item\n- [x] Completed item\n- [ ] Another todo\n";
     let temp_file = create_temp_file(content);
-    let file = MarkdownFile::from_path(&temp_file.path().to_path_buf());
+    let file = MarkdownFile::from_path(&temp_file.path().to_path_buf()).unwrap();
 
     assert_eq!(file.blocks.len(), 1);
     match &file.blocks[0] {
@@ -111,7 +111,7 @@ fn test_parse_checklist() {
 fn test_parse_paragraph() {
     let content = "This is a simple paragraph.\n";
     let temp_file = create_temp_file(content);
-    let file = MarkdownFile::from_path(&temp_file.path().to_path_buf());
+    let file = MarkdownFile::from_path(&temp_file.path().to_path_buf()).unwrap();
 
     assert_eq!(file.blocks.len(), 1);
     match &file.blocks[0] {
@@ -149,7 +149,7 @@ Another paragraph at the end.
 "#;
 
     let temp_file = create_temp_file(content);
-    let file = MarkdownFile::from_path(&temp_file.path().to_path_buf());
+    let file = MarkdownFile::from_path(&temp_file.path().to_path_buf()).unwrap();
 
     // Should be 9 blocks: heading + paragraph + heading + checklist + heading + list + heading + list + paragraph
     assert_eq!(file.blocks.len(), 9);
@@ -243,7 +243,7 @@ Another paragraph at the end.
 fn test_parse_empty_file() {
     let content = "";
     let temp_file = create_temp_file(content);
-    let file = MarkdownFile::from_path(&temp_file.path().to_path_buf());
+    let file = MarkdownFile::from_path(&temp_file.path().to_path_buf()).unwrap();
 
     assert_eq!(file.blocks.len(), 0);
 }
@@ -252,7 +252,7 @@ fn test_parse_empty_file() {
 fn test_parse_whitespace_only() {
     let content = "   \n\n  \n";
     let temp_file = create_temp_file(content);
-    let file = MarkdownFile::from_path(&temp_file.path().to_path_buf());
+    let file = MarkdownFile::from_path(&temp_file.path().to_path_buf()).unwrap();
 
     assert_eq!(file.blocks.len(), 0);
 }
@@ -261,7 +261,7 @@ fn test_parse_whitespace_only() {
 fn test_list_with_empty_lines() {
     let content = "- First item\n\n- Second item\n- Third item\n";
     let temp_file = create_temp_file(content);
-    let file = MarkdownFile::from_path(&temp_file.path().to_path_buf());
+    let file = MarkdownFile::from_path(&temp_file.path().to_path_buf()).unwrap();
 
     assert_eq!(file.blocks.len(), 1);
     match &file.blocks[0] {

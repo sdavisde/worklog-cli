@@ -34,11 +34,9 @@ pub struct MarkdownFile {
 
 impl MarkdownFile {
 
-    pub fn from_path(file_path: &PathBuf) -> Self {
-        let content = fs::read_to_string(&file_path)
-            .expect(&format!("Failed to read contents from {:?}", file_path).to_string());
-
-        Self::from_string(&content)
+    pub fn from_path(file_path: &PathBuf) -> Result<Self, std::io::Error> {
+        let content = fs::read_to_string(file_path)?;
+        Ok(Self::from_string(&content))
     }
 
     pub fn from_string(content: &str) -> Self {
@@ -58,7 +56,14 @@ impl MarkdownFile {
 
             // Check for heading
             if heading::HEADING_REGEX.is_match(line) {
-                blocks.push(heading::parse_heading(line));
+                if let Some(heading_block) = heading::parse_heading(line) {
+                    blocks.push(heading_block);
+                } else {
+                    // Fallback to paragraph if parsing fails
+                    blocks.push(MarkdownBlock::Paragraph(paragraph::Paragraph {
+                        content: line.to_string(),
+                    }));
+                }
                 i += 1;
             }
             // Check for checklist (must come before unordered list check)
@@ -107,7 +112,7 @@ impl MarkdownFile {
         let mut new_blocks = self.blocks.clone();
 
         // todo: probably a cleaner way to check if the first block is a heading
-        if let Some(MarkdownBlock::Heading(heading_block)) = self.blocks.get(0) {
+        if let Some(MarkdownBlock::Heading(_)) = self.blocks.get(0) {
             new_blocks[0] = new_heading;
         } else {
             new_blocks.insert(0, new_heading);

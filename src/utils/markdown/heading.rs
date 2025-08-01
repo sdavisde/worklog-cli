@@ -30,10 +30,10 @@ impl fmt::Display for Heading {
     }
 }
 
-pub fn parse_heading(line: &str) -> MarkdownBlock {
-    let caps = HEADING_REGEX.captures(line).expect("Failed to parse heading");
+pub fn parse_heading(line: &str) -> Option<MarkdownBlock> {
+    let caps = HEADING_REGEX.captures(line)?;
     let level = caps[1].len() as u32;
     let content = caps[2].to_string();
 
-    MarkdownBlock::Heading(Heading { level, content })
+    Some(MarkdownBlock::Heading(Heading { level, content }))
 }
