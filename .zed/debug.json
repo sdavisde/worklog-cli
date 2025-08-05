@@ -9,7 +9,7 @@
       "command": "cargo",
       "args": ["build"]
     },
-    "program": "target/debug/worklog-cli",
+    "program": "target/debug/wl",
     "sourceLanguages": ["rust"],
     "request": "launch",
     "adapter": "CodeLLDB",
@@ -21,7 +21,7 @@
       "command": "cargo",
       "args": ["build"]
     },
-    "program": "target/debug/worklog-cli",
+    "program": "target/debug/wl",
     "sourceLanguages": ["rust"],
     "request": "launch",
     "adapter": "CodeLLDB",

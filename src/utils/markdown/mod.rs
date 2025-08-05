@@ -134,9 +134,9 @@ impl MarkdownFile {
             .join("\n\n")
     }
 
-    pub fn to_vec(&self) -> Vec<String> {
-        self.blocks.iter().map(|block| block.to_string()).collect()
-    }
+    // pub fn to_vec(&self) -> Vec<String> {
+    //     self.blocks.iter().map(|block| block.to_string()).collect()
+    // }
 
     pub fn set_title(&self, new_title: &str) -> MarkdownFile {
         let new_heading = MarkdownBlock::Heading(heading::Heading::new(1, new_title.to_string()));

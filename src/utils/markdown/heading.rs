@@ -18,9 +18,9 @@ impl Heading {
         Heading { level, content }
     }
 
-    pub fn replace(&mut self, new_content: String) {
-        self.content = new_content;
-    }
+    // pub fn replace(&mut self, new_content: String) {
+    //     self.content = new_content;
+    // }
 
 }
 

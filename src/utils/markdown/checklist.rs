@@ -17,15 +17,15 @@ impl Checklist {
         Checklist { items: Vec::new() }
     }
 
-    pub fn add_item(&mut self, item: String) {
-        self.items.push((false, item));
-    }
+    // pub fn add_item(&mut self, item: String) {
+    //     self.items.push((false, item));
+    // }
 
-    pub fn toggle_item(&mut self, index: usize) {
-        if let Some((checked, _)) = self.items.get_mut(index) {
-            *checked = !*checked;
-        }
-    }
+    // pub fn toggle_item(&mut self, index: usize) {
+    //     if let Some((checked, _)) = self.items.get_mut(index) {
+    //         *checked = !*checked;
+    //     }
+    // }
 
 }
 
