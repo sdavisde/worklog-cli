@@ -3,8 +3,8 @@ use std::{fmt, fs, path::PathBuf};
 pub mod checklist;
 pub mod heading;
 pub mod ordered_list;
-pub mod unordered_list;
 pub mod paragraph;
+pub mod unordered_list;
 
 #[derive(Debug, Clone)]
 pub enum MarkdownBlock {
@@ -29,11 +29,10 @@ impl fmt::Display for MarkdownBlock {
 
 #[derive(Debug, Clone)]
 pub struct MarkdownFile {
-    pub blocks: Vec<MarkdownBlock>
+    pub blocks: Vec<MarkdownBlock>,
 }
 
 impl MarkdownFile {
-
     pub fn from_path(file_path: &PathBuf) -> Result<Self, std::io::Error> {
         let content = fs::read_to_string(file_path)?;
         Ok(Self::from_string(&content))
@@ -128,7 +127,8 @@ impl MarkdownFile {
     }
 
     pub fn to_string(&self) -> String {
-        self.blocks.iter()
+        self.blocks
+            .iter()
             .map(|block| block.to_string())
             .collect::<Vec<_>>()
             .join("\n\n")
@@ -149,8 +149,6 @@ impl MarkdownFile {
             new_blocks.insert(0, new_heading);
         }
 
-        MarkdownFile {
-            blocks: new_blocks,
-        }
+        MarkdownFile { blocks: new_blocks }
     }
 }

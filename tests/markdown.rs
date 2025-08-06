@@ -1,8 +1,8 @@
 use std::fs;
 use tempfile::NamedTempFile;
 
-use worklog_cli::utils::markdown::*;
 use worklog_cli::utils::markdown::unordered_list::UnorderedListItem;
+use worklog_cli::utils::markdown::*;
 
 #[test]
 fn test_parse_single_heading() {
@@ -63,10 +63,34 @@ fn test_parse_unordered_list() {
     match &file.blocks[0] {
         MarkdownBlock::UnorderedList(list) => {
             assert_eq!(list.items.len(), 4);
-            assert_eq!(list.items[0], UnorderedListItem { content: "First item".to_string(), indentation_level: 0 });
-            assert_eq!(list.items[1], UnorderedListItem { content: "Second item".to_string(), indentation_level: 0 });
-            assert_eq!(list.items[2], UnorderedListItem { content: "Third item".to_string(), indentation_level: 0 });
-            assert_eq!(list.items[3], UnorderedListItem { content: "Fourth item".to_string(), indentation_level: 0 });
+            assert_eq!(
+                list.items[0],
+                UnorderedListItem {
+                    content: "First item".to_string(),
+                    indentation_level: 0
+                }
+            );
+            assert_eq!(
+                list.items[1],
+                UnorderedListItem {
+                    content: "Second item".to_string(),
+                    indentation_level: 0
+                }
+            );
+            assert_eq!(
+                list.items[2],
+                UnorderedListItem {
+                    content: "Third item".to_string(),
+                    indentation_level: 0
+                }
+            );
+            assert_eq!(
+                list.items[3],
+                UnorderedListItem {
+                    content: "Fourth item".to_string(),
+                    indentation_level: 0
+                }
+            );
         }
         _ => panic!("Expected unordered list block"),
     }
@@ -204,9 +228,27 @@ Another paragraph at the end.
     match &file.blocks[5] {
         MarkdownBlock::UnorderedList(list) => {
             assert_eq!(list.items.len(), 3);
-            assert_eq!(list.items[0], UnorderedListItem { content: "Milk".to_string(), indentation_level: 0 });
-            assert_eq!(list.items[1], UnorderedListItem { content: "Bread".to_string(), indentation_level: 0 });
-            assert_eq!(list.items[2], UnorderedListItem { content: "Eggs".to_string(), indentation_level: 0 });
+            assert_eq!(
+                list.items[0],
+                UnorderedListItem {
+                    content: "Milk".to_string(),
+                    indentation_level: 0
+                }
+            );
+            assert_eq!(
+                list.items[1],
+                UnorderedListItem {
+                    content: "Bread".to_string(),
+                    indentation_level: 0
+                }
+            );
+            assert_eq!(
+                list.items[2],
+                UnorderedListItem {
+                    content: "Eggs".to_string(),
+                    indentation_level: 0
+                }
+            );
         }
         _ => panic!("Expected unordered list block at index 5"),
     }
@@ -268,9 +310,27 @@ fn test_list_with_empty_lines() {
     match &file.blocks[0] {
         MarkdownBlock::UnorderedList(list) => {
             assert_eq!(list.items.len(), 3);
-            assert_eq!(list.items[0], UnorderedListItem { content: "First item".to_string(), indentation_level: 0 });
-            assert_eq!(list.items[1], UnorderedListItem { content: "Second item".to_string(), indentation_level: 0 });
-            assert_eq!(list.items[2], UnorderedListItem { content: "Third item".to_string(), indentation_level: 0 });
+            assert_eq!(
+                list.items[0],
+                UnorderedListItem {
+                    content: "First item".to_string(),
+                    indentation_level: 0
+                }
+            );
+            assert_eq!(
+                list.items[1],
+                UnorderedListItem {
+                    content: "Second item".to_string(),
+                    indentation_level: 0
+                }
+            );
+            assert_eq!(
+                list.items[2],
+                UnorderedListItem {
+                    content: "Third item".to_string(),
+                    indentation_level: 0
+                }
+            );
         }
         _ => panic!("Expected unordered list block"),
     }
@@ -296,7 +356,8 @@ fn test_checklist_with_empty_lines() {
 
 #[test]
 fn test_parse_nested_unordered_list() {
-    let content = "- Top level item\n  - Nested item\n    - Double nested item\n- Another top level item\n";
+    let content =
+        "- Top level item\n  - Nested item\n    - Double nested item\n- Another top level item\n";
     let temp_file = create_temp_file(content);
     let file = MarkdownFile::from_path(&temp_file.path().to_path_buf()).unwrap();
 
@@ -304,10 +365,34 @@ fn test_parse_nested_unordered_list() {
     match &file.blocks[0] {
         MarkdownBlock::UnorderedList(list) => {
             assert_eq!(list.items.len(), 4);
-            assert_eq!(list.items[0], UnorderedListItem { content: "Top level item".to_string(), indentation_level: 0 });
-            assert_eq!(list.items[1], UnorderedListItem { content: "Nested item".to_string(), indentation_level: 1 });
-            assert_eq!(list.items[2], UnorderedListItem { content: "Double nested item".to_string(), indentation_level: 2 });
-            assert_eq!(list.items[3], UnorderedListItem { content: "Another top level item".to_string(), indentation_level: 0 });
+            assert_eq!(
+                list.items[0],
+                UnorderedListItem {
+                    content: "Top level item".to_string(),
+                    indentation_level: 0
+                }
+            );
+            assert_eq!(
+                list.items[1],
+                UnorderedListItem {
+                    content: "Nested item".to_string(),
+                    indentation_level: 1
+                }
+            );
+            assert_eq!(
+                list.items[2],
+                UnorderedListItem {
+                    content: "Double nested item".to_string(),
+                    indentation_level: 2
+                }
+            );
+            assert_eq!(
+                list.items[3],
+                UnorderedListItem {
+                    content: "Another top level item".to_string(),
+                    indentation_level: 0
+                }
+            );
         }
         _ => panic!("Expected unordered list block"),
     }
@@ -322,7 +407,10 @@ fn test_parse_multiline_paragraph() {
     assert_eq!(file.blocks.len(), 1);
     match &file.blocks[0] {
         MarkdownBlock::Paragraph(paragraph) => {
-            assert_eq!(paragraph.content, "This is the first line. This is the second line. This is the third line.");
+            assert_eq!(
+                paragraph.content,
+                "This is the first line. This is the second line. This is the third line."
+            );
         }
         _ => panic!("Expected paragraph block"),
     }
@@ -335,17 +423,23 @@ fn test_parse_paragraphs_separated_by_empty_lines() {
     let file = MarkdownFile::from_path(&temp_file.path().to_path_buf()).unwrap();
 
     assert_eq!(file.blocks.len(), 2);
-    
+
     match &file.blocks[0] {
         MarkdownBlock::Paragraph(paragraph) => {
-            assert_eq!(paragraph.content, "First paragraph line one. First paragraph line two.");
+            assert_eq!(
+                paragraph.content,
+                "First paragraph line one. First paragraph line two."
+            );
         }
         _ => panic!("Expected first paragraph block"),
     }
-    
+
     match &file.blocks[1] {
         MarkdownBlock::Paragraph(paragraph) => {
-            assert_eq!(paragraph.content, "Second paragraph line one. Second paragraph line two.");
+            assert_eq!(
+                paragraph.content,
+                "Second paragraph line one. Second paragraph line two."
+            );
         }
         _ => panic!("Expected second paragraph block"),
     }
@@ -369,7 +463,8 @@ fn test_parse_heading_with_extra_whitespace() {
 
 #[test]
 fn test_parse_checklist_with_uppercase_x() {
-    let content = "- [ ] Todo item\n- [X] Completed with uppercase X\n- [x] Completed with lowercase x\n";
+    let content =
+        "- [ ] Todo item\n- [X] Completed with uppercase X\n- [x] Completed with lowercase x\n";
     let temp_file = create_temp_file(content);
     let file = MarkdownFile::from_path(&temp_file.path().to_path_buf()).unwrap();
 
@@ -378,8 +473,14 @@ fn test_parse_checklist_with_uppercase_x() {
         MarkdownBlock::Checklist(checklist) => {
             assert_eq!(checklist.items.len(), 3);
             assert_eq!(checklist.items[0], (false, "Todo item".to_string()));
-            assert_eq!(checklist.items[1], (true, "Completed with uppercase X".to_string()));
-            assert_eq!(checklist.items[2], (true, "Completed with lowercase x".to_string()));
+            assert_eq!(
+                checklist.items[1],
+                (true, "Completed with uppercase X".to_string())
+            );
+            assert_eq!(
+                checklist.items[2],
+                (true, "Completed with lowercase x".to_string())
+            );
         }
         _ => panic!("Expected checklist block"),
     }
@@ -395,9 +496,27 @@ fn test_parse_list_with_trailing_whitespace() {
     match &file.blocks[0] {
         MarkdownBlock::UnorderedList(list) => {
             assert_eq!(list.items.len(), 3);
-            assert_eq!(list.items[0], UnorderedListItem { content: "First item".to_string(), indentation_level: 0 });
-            assert_eq!(list.items[1], UnorderedListItem { content: "Second item".to_string(), indentation_level: 0 });
-            assert_eq!(list.items[2], UnorderedListItem { content: "Third item".to_string(), indentation_level: 0 });
+            assert_eq!(
+                list.items[0],
+                UnorderedListItem {
+                    content: "First item".to_string(),
+                    indentation_level: 0
+                }
+            );
+            assert_eq!(
+                list.items[1],
+                UnorderedListItem {
+                    content: "Second item".to_string(),
+                    indentation_level: 0
+                }
+            );
+            assert_eq!(
+                list.items[2],
+                UnorderedListItem {
+                    content: "Third item".to_string(),
+                    indentation_level: 0
+                }
+            );
         }
         _ => panic!("Expected unordered list block"),
     }

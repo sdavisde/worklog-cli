@@ -1,22 +1,32 @@
 use std::fs;
 
-use crate::{commands::daily_note::{create_daily_note_if_not_exists, get_daily_note_path}, utils::markdown::{unordered_list::{UnorderedList, UnorderedListItem}, MarkdownBlock}};
+use crate::{
+    commands::daily_note::{create_daily_note_if_not_exists, get_daily_note_path},
+    utils::markdown::{
+        MarkdownBlock,
+        unordered_list::{UnorderedList, UnorderedListItem},
+    },
+};
 
 pub fn add_note(note: &str, create_fresh: bool) {
     let daily_note_path = get_daily_note_path();
-    let mut daily_note = create_daily_note_if_not_exists(&daily_note_path, create_fresh).expect("Failed to verify daily note exists");
+    let mut daily_note = create_daily_note_if_not_exists(&daily_note_path, create_fresh)
+        .expect("Failed to verify daily note exists");
 
     // Prepend the note passed in with a dash for markdown lists
     let mut note_heading_index: Option<usize> = None;
-    daily_note.blocks.iter_mut().enumerate().for_each(|(index, block)| {
-        if let MarkdownBlock::Heading(heading) = block {
-            if heading.content.contains("## Notes") {
-                // Add the note to the heading block
-                note_heading_index = Some(index);
+    daily_note
+        .blocks
+        .iter_mut()
+        .enumerate()
+        .for_each(|(index, block)| {
+            if let MarkdownBlock::Heading(heading) = block {
+                if heading.content.contains("Notes") {
+                    // Add the note to the heading block
+                    note_heading_index = Some(index);
+                }
             }
-        }
-    });
-
+        });
 
     if note_heading_index.is_some() {
         let note_list_index = note_heading_index.unwrap() + 1;
@@ -35,7 +45,10 @@ pub fn add_note(note: &str, create_fresh: bool) {
                 content: note.to_string(),
                 indentation_level: 0,
             });
-            daily_note.blocks.insert(note_list_index, MarkdownBlock::UnorderedList(new_note_list_block));
+            daily_note.blocks.insert(
+                note_list_index,
+                MarkdownBlock::UnorderedList(new_note_list_block),
+            );
         }
     }
     // If a notes section doesn't exist already, append to end

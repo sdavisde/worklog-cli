@@ -1,5 +1,5 @@
-use std::process::Command;
 use std::fs;
+use std::process::Command;
 use tempfile::TempDir;
 
 fn setup_test_env() -> TempDir {
@@ -41,7 +41,10 @@ fn run_wl_command(args: &[&str], home_dir: &std::path::Path) -> std::process::Ou
 
 fn get_daily_note_path(home_dir: &std::path::Path) -> std::path::PathBuf {
     let today = chrono::Local::now().format("%Y-%m-%d").to_string();
-    home_dir.join(".worklog").join("daily_notes").join(format!("{}.md", today))
+    home_dir
+        .join(".worklog")
+        .join("daily_notes")
+        .join(format!("{}.md", today))
 }
 
 // Basic command tests
@@ -50,7 +53,11 @@ fn test_wl_task_adds_task() {
     let temp_dir = setup_test_env();
     let output = run_wl_command(&["task", "Test task"], temp_dir.path());
 
-    assert!(output.status.success(), "Command failed: {:?}", String::from_utf8_lossy(&output.stderr));
+    assert!(
+        output.status.success(),
+        "Command failed: {:?}",
+        String::from_utf8_lossy(&output.stderr)
+    );
 
     let daily_note_path = get_daily_note_path(temp_dir.path());
     let content = fs::read_to_string(&daily_note_path).unwrap();
@@ -63,7 +70,11 @@ fn test_wl_note_adds_note() {
     let temp_dir = setup_test_env();
     let output = run_wl_command(&["note", "Test note"], temp_dir.path());
 
-    assert!(output.status.success(), "Command failed: {:?}", String::from_utf8_lossy(&output.stderr));
+    assert!(
+        output.status.success(),
+        "Command failed: {:?}",
+        String::from_utf8_lossy(&output.stderr)
+    );
 
     let daily_note_path = get_daily_note_path(temp_dir.path());
     let content = fs::read_to_string(&daily_note_path).unwrap();
@@ -81,7 +92,11 @@ fn test_wl_open_creates_daily_note() {
     fs::write(config_dir.join("config.yaml"), "editor_command: echo\n").unwrap();
 
     let output = run_wl_command(&["open"], temp_dir.path());
-    assert!(output.status.success(), "Command failed: {:?}", String::from_utf8_lossy(&output.stderr));
+    assert!(
+        output.status.success(),
+        "Command failed: {:?}",
+        String::from_utf8_lossy(&output.stderr)
+    );
 
     let daily_note_path = get_daily_note_path(temp_dir.path());
     assert!(daily_note_path.exists());
@@ -107,7 +122,11 @@ fn test_wl_last_opens_most_recent_note() {
     fs::write(daily_notes_dir.join("2023-01-02.md"), "Newer note").unwrap();
 
     let output = run_wl_command(&["last"], temp_dir.path());
-    assert!(output.status.success(), "Command failed: {:?}", String::from_utf8_lossy(&output.stderr));
+    assert!(
+        output.status.success(),
+        "Command failed: {:?}",
+        String::from_utf8_lossy(&output.stderr)
+    );
 }
 
 // Edge case tests
@@ -134,9 +153,16 @@ fn test_wl_note_empty_description() {
 #[test]
 fn test_wl_task_with_quotes() {
     let temp_dir = setup_test_env();
-    let output = run_wl_command(&["task", "Task with \"quotes\" and 'apostrophes'"], temp_dir.path());
+    let output = run_wl_command(
+        &["task", "Task with \"quotes\" and 'apostrophes'"],
+        temp_dir.path(),
+    );
 
-    assert!(output.status.success(), "Command failed: {:?}", String::from_utf8_lossy(&output.stderr));
+    assert!(
+        output.status.success(),
+        "Command failed: {:?}",
+        String::from_utf8_lossy(&output.stderr)
+    );
 
     let daily_note_path = get_daily_note_path(temp_dir.path());
     let content = fs::read_to_string(&daily_note_path).unwrap();
@@ -148,7 +174,11 @@ fn test_wl_note_with_special_characters() {
     let temp_dir = setup_test_env();
     let output = run_wl_command(&["note", "Note with symbols: @#$%^&*()"], temp_dir.path());
 
-    assert!(output.status.success(), "Command failed: {:?}", String::from_utf8_lossy(&output.stderr));
+    assert!(
+        output.status.success(),
+        "Command failed: {:?}",
+        String::from_utf8_lossy(&output.stderr)
+    );
 
     let daily_note_path = get_daily_note_path(temp_dir.path());
     let content = fs::read_to_string(&daily_note_path).unwrap();
@@ -185,7 +215,12 @@ fn test_wl_help_flag() {
 
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("task") || stdout.contains("note") || stdout.contains("open") || stdout.contains("last"));
+    assert!(
+        stdout.contains("task")
+            || stdout.contains("note")
+            || stdout.contains("open")
+            || stdout.contains("last")
+    );
 }
 
 #[test]
@@ -221,7 +256,11 @@ fn test_wl_no_command_defaults_to_open() {
     fs::write(config_dir.join("config.yaml"), "editor_command: echo\n").unwrap();
 
     let output = run_wl_command(&[], temp_dir.path());
-    assert!(output.status.success(), "Command failed: {:?}", String::from_utf8_lossy(&output.stderr));
+    assert!(
+        output.status.success(),
+        "Command failed: {:?}",
+        String::from_utf8_lossy(&output.stderr)
+    );
 
     // Should have created the daily note
     let daily_note_path = get_daily_note_path(temp_dir.path());
@@ -233,16 +272,32 @@ fn test_task_goes_to_intake_section_not_notes() {
     let temp_dir = setup_test_env();
     let output = run_wl_command(&["task", "test task"], temp_dir.path());
 
-    assert!(output.status.success(), "Command failed: {:?}", String::from_utf8_lossy(&output.stderr));
+    assert!(
+        output.status.success(),
+        "Command failed: {:?}",
+        String::from_utf8_lossy(&output.stderr)
+    );
 
     let daily_note_path = get_daily_note_path(temp_dir.path());
     let content = fs::read_to_string(&daily_note_path).unwrap();
 
     // Find the positions of the sections and the task
-    let intake_section_pos = content.find("### Intake").expect("Intake section should exist");
-    let notes_section_pos = content.find("## Notes").expect("Notes section should exist");
-    let task_pos = content.find("- [ ] test task").expect("Task should be in the file");
+    let intake_section_pos = content
+        .find("### Intake")
+        .expect("Intake section should exist");
+    let notes_section_pos = content
+        .find("## Notes")
+        .expect("Notes section should exist");
+    let task_pos = content
+        .find("- [ ] test task")
+        .expect("Task should be in the file");
 
-    assert!(intake_section_pos < task_pos, "Task should appear after ### Intake section");
-    assert!(task_pos < notes_section_pos, "Task should appear before ## Notes section");
+    assert!(
+        intake_section_pos < task_pos,
+        "Task should appear after ### Intake section"
+    );
+    assert!(
+        task_pos < notes_section_pos,
+        "Task should appear before ## Notes section"
+    );
 }

@@ -3,9 +3,8 @@ use std::{fmt, sync::LazyLock};
 
 use crate::utils::markdown::MarkdownBlock;
 
-pub static HEADING_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"^\s*(#{1,6})\s+(.+?)\s*$").unwrap()
-});
+pub static HEADING_REGEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^\s*(#{1,6})\s+(.+?)\s*$").unwrap());
 
 #[derive(Debug, Clone)]
 pub struct Heading {
@@ -21,7 +20,6 @@ impl Heading {
     // pub fn replace(&mut self, new_content: String) {
     //     self.content = new_content;
     // }
-
 }
 
 impl fmt::Display for Heading {

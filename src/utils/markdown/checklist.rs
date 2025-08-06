@@ -3,9 +3,8 @@ use std::{fmt, sync::LazyLock};
 
 use crate::utils::markdown::MarkdownBlock;
 
-pub static CHECKLIST_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"^\s*[-*+]\s+\[([ xX])\]\s+(.+?)\s*$").unwrap()
-});
+pub static CHECKLIST_REGEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^\s*[-*+]\s+\[([ xX])\]\s+(.+?)\s*$").unwrap());
 
 #[derive(Debug, Clone)]
 pub struct Checklist {
@@ -26,12 +25,13 @@ impl Checklist {
     //         *checked = !*checked;
     //     }
     // }
-
 }
 
 impl fmt::Display for Checklist {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let content = self.items.iter()
+        let content = self
+            .items
+            .iter()
             .map(|(checked, item)| {
                 let checkbox = if *checked { "[x]" } else { "[ ]" };
                 format!("- {} {}", checkbox, item)
@@ -65,5 +65,8 @@ pub fn parse_checklist(lines: &[&str], start_index: usize) -> (MarkdownBlock, us
         }
     }
 
-    (MarkdownBlock::Checklist(Checklist { items }), i - start_index)
+    (
+        MarkdownBlock::Checklist(Checklist { items }),
+        i - start_index,
+    )
 }

@@ -1,8 +1,8 @@
 use clap::{Parser, Subcommand};
 
+mod commands;
 mod config;
 mod utils;
-mod commands;
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -16,7 +16,7 @@ struct Cli {
 
     // only used for root and open commands, to ensure daily note is made fresh from template
     #[arg(long, default_value_t = false)]
-    fresh: bool
+    fresh: bool,
 }
 
 #[derive(Subcommand)]
@@ -43,10 +43,12 @@ fn main() {
     // matches just as you would the top level cmd
     match &cli.command {
         Some(Commands::Open) | None => {
-            commands::daily_note::open_daily_note(config, cli.fresh).expect("Failed to open daily note");
+            commands::daily_note::open_daily_note(config, cli.fresh)
+                .expect("Failed to open daily note");
         }
         Some(Commands::Last) => {
-            commands::daily_note::open_last_daily_note(config).expect("Failed to open last daily note");
+            commands::daily_note::open_last_daily_note(config)
+                .expect("Failed to open last daily note");
         }
         Some(Commands::Task { description }) => {
             if description.is_empty() {

@@ -3,9 +3,8 @@ use std::{fmt, sync::LazyLock};
 
 use crate::utils::markdown::MarkdownBlock;
 
-pub static ORDERED_LIST_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"^\s*(\d+)\.\s+(.+?)\s*$").unwrap()
-});
+pub static ORDERED_LIST_REGEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^\s*(\d+)\.\s+(.+?)\s*$").unwrap());
 
 #[derive(Debug, Clone)]
 pub struct OrderedList {
@@ -14,7 +13,9 @@ pub struct OrderedList {
 
 impl fmt::Display for OrderedList {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let content = self.items.iter()
+        let content = self
+            .items
+            .iter()
             .enumerate()
             .map(|(i, item)| format!("{}. {}", i + 1, item))
             .collect::<Vec<_>>()
@@ -43,5 +44,8 @@ pub fn parse_ordered_list(lines: &[&str], start_index: usize) -> (MarkdownBlock,
         }
     }
 
-    (MarkdownBlock::OrderedList(OrderedList { items }), i - start_index)
+    (
+        MarkdownBlock::OrderedList(OrderedList { items }),
+        i - start_index,
+    )
 }

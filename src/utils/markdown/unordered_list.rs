@@ -3,10 +3,8 @@ use std::{fmt, sync::LazyLock};
 
 use crate::utils::markdown::MarkdownBlock;
 
-pub static UNORDERED_LIST_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"^(\s*)[-*+]\s+(.+?)\s*$").unwrap()
-});
-
+pub static UNORDERED_LIST_REGEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^(\s*)[-*+]\s+(.+?)\s*$").unwrap());
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct UnorderedListItem {
@@ -23,12 +21,13 @@ impl UnorderedList {
     pub fn new() -> Self {
         UnorderedList { items: Vec::new() }
     }
-
 }
 
 impl fmt::Display for UnorderedList {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let content = self.items.iter()
+        let content = self
+            .items
+            .iter()
             .map(|item| {
                 let indent = "  ".repeat(item.indentation_level);
                 format!("{}- {}", indent, item.content)
@@ -67,5 +66,8 @@ pub fn parse_unordered_list(lines: &[&str], start_index: usize) -> (MarkdownBloc
         }
     }
 
-    (MarkdownBlock::UnorderedList(UnorderedList { items }), i - start_index)
+    (
+        MarkdownBlock::UnorderedList(UnorderedList { items }),
+        i - start_index,
+    )
 }

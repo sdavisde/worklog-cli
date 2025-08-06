@@ -2,7 +2,13 @@ use std::{fs, path::PathBuf, process::Command};
 
 use chrono::NaiveDate;
 
-use crate::{config::Config, utils::{markdown::{MarkdownBlock, MarkdownFile}, time::{get_today_date}}};
+use crate::{
+    config::Config,
+    utils::{
+        markdown::{MarkdownBlock, MarkdownFile},
+        time::get_today_date,
+    },
+};
 
 // todo: eventually, it'd be nice to have a struct/impl like "DailyNote"
 
@@ -25,13 +31,16 @@ pub fn open_daily_note(config: Config, create_fresh: bool) -> Result<String, Str
     return Ok("Success".to_string());
 }
 
-pub fn create_daily_note_if_not_exists(daily_note_path: &PathBuf, create_fresh: bool) -> Result<MarkdownFile, String> {
+pub fn create_daily_note_if_not_exists(
+    daily_note_path: &PathBuf,
+    create_fresh: bool,
+) -> Result<MarkdownFile, String> {
     if daily_note_path.exists() {
         return MarkdownFile::from_path(&daily_note_path).map_err(|e| e.to_string());
     }
 
     let last_note_path = get_last_daily_note_path();
-let today = get_today_date();
+    let today = get_today_date();
 
     let note_source = if create_fresh || last_note_path.is_err() {
         from_template_file()?
@@ -46,7 +55,7 @@ let today = get_today_date();
     // update note header by replacing {{ DATE }} with today's date
     if let MarkdownBlock::Heading(header) = &mut note.blocks[0] {
         let mut new_header = header.clone();
-        new_header.content = new_header.content.replace("{{ DATE }}", &today);
+        new_header.content = new_header.content.replace("{{DATE}}", &today);
         note.blocks[0] = MarkdownBlock::Heading(new_header);
     }
 
@@ -154,11 +163,12 @@ fn get_note_path(date: &str) -> PathBuf {
         .join(format!("{}.md", date));
 }
 
-
 fn from_template_file() -> Result<MarkdownFile, String> {
-  // if the template file does not exist, we should create it with the default template
-  if !PathBuf::from("templates/daily.md").exists() {
-    fs::write("templates/daily.md", "# {{DATE}}
+    // if the template file does not exist, we should create it with the default template
+    if !PathBuf::from("templates/daily.md").exists() {
+        fs::write(
+            "templates/daily.md",
+            "# {{DATE}}
 
 ## Tasks
 
@@ -174,10 +184,12 @@ fn from_template_file() -> Result<MarkdownFile, String> {
 
 ## Notes
 
-    ").map_err(|e| format!("Failed to write template: {}", e))?;
-  }
+    ",
+        )
+        .map_err(|e| format!("Failed to write template: {}", e))?;
+    }
 
-  let template = fs::read_to_string("templates/daily.md")
-    .map_err(|e| format!("Failed to read template: {}", e))?;
-  Ok(MarkdownFile::from_string(&template))
+    let template = fs::read_to_string("templates/daily.md")
+        .map_err(|e| format!("Failed to read template: {}", e))?;
+    Ok(MarkdownFile::from_string(&template))
 }
