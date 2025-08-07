@@ -64,9 +64,11 @@ jobs:
           cp -r templates dist/
           tar -czf worklog-cli-${{ matrix.target }}.tar.gz -C dist .
 
-      - name: Upload release assets
-        uses: softprops/action-gh-release@v1
-        with:
-          files: worklog-cli-*.tar.gz
-          generate_release_notes: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release with GitHub CLI
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create ${{ github.ref_name }} \
+            --title "Release ${{ github.ref_name }}" \
+            --generate-notes \
+            worklog-cli-*.tar.gz
