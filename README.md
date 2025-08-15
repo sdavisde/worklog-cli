@@ -6,20 +6,38 @@ A modular CLI tool for daily task and time tracking with simple Markdown-based n
 
 ### Installation
 
-> With either option, `wl` will be added as an executable command on your PATH
+#### Download from GitHub Releases (Recommended)
 
-#### Option 1: Install from GitHub (Recommended)
+**macOS (Apple Silicon):**
 ```bash
-cargo install --git https://github.com/sdavisde/worklog-cli
+# Download and install in one command
+curl -L https://github.com/sdavisde/worklog-cli/releases/latest/download/worklog-cli-aarch64-apple-darwin.tar.gz | sudo tar -xz -C /usr/local/bin/
+
+# Verify installation
+wl --help
 ```
 
-#### Option 2: Build from source
+#### Build from Source
+
+If you prefer to build from source or need to build for a different platform:
+
 ```bash
+# Clone and build
 git clone https://github.com/sdavisde/worklog-cli
 cd worklog-cli
 cargo build --release
-# Binary will be in target/release/worklog-cli
+
+# Install binary and templates
+sudo cp target/release/wl /usr/local/bin/
+sudo cp -r templates /usr/local/bin/
+
+# Verify installation
+wl --help
 ```
+
+**Requirements:**
+- macOS (currently only macOS Apple Silicon binaries are provided)
+- Rust 1.70+ (for building from source only)
 
 ### Basic Usage
 
@@ -110,6 +128,25 @@ cargo run -- --help
 cargo run -- open
 `cargo run -- tasks
 ```
+
+### Releasing
+
+Use the provided release script to automate version bumping, tagging, and releasing:
+
+```bash
+# Test the release process (dry run)
+./release.sh 0.3.1 --dry-run
+
+# Create and publish a release
+./release.sh 0.3.1
+```
+
+The script will:
+1. Update version in `Cargo.toml`
+2. Run tests to ensure everything works
+3. Commit the version bump
+4. Create and push a git tag
+5. Trigger GitHub Actions to build and publish the release
 
 ### Adding New Commands
 
