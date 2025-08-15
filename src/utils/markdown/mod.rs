@@ -151,4 +151,35 @@ impl MarkdownFile {
 
         MarkdownFile { blocks: new_blocks }
     }
+
+    pub fn filter_completed_tasks(&self) -> MarkdownFile {
+        let mut new_blocks = Vec::new();
+        
+        for block in &self.blocks {
+            match block {
+                MarkdownBlock::Checklist(checklist) => {
+                    // Filter out completed tasks
+                    let uncompleted_items: Vec<(bool, String)> = checklist
+                        .items
+                        .iter()
+                        .filter(|(completed, _)| !completed)
+                        .cloned()
+                        .collect();
+                    
+                    // Only add the checklist if it has uncompleted items
+                    if !uncompleted_items.is_empty() {
+                        new_blocks.push(MarkdownBlock::Checklist(checklist::Checklist {
+                            items: uncompleted_items,
+                        }));
+                    }
+                }
+                _ => {
+                    // Add all other block types as-is
+                    new_blocks.push(block.clone());
+                }
+            }
+        }
+
+        MarkdownFile { blocks: new_blocks }
+    }
 }

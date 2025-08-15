@@ -47,7 +47,7 @@ pub fn create_daily_note_if_not_exists(
     } else {
         let last_note_file = MarkdownFile::from_path(&last_note_path.unwrap())
             .map_err(|e| format!("Failed to read last note: {}", e))?;
-        last_note_file.set_title(&today)
+        last_note_file.filter_completed_tasks().set_title(&today)
     };
 
     // Replace {{DATE}} with actual date
