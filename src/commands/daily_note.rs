@@ -164,10 +164,21 @@ fn get_note_path(date: &str) -> PathBuf {
 }
 
 fn from_template_file() -> Result<MarkdownFile, String> {
+    let home = std::env::var("HOME").map_err(|_| "Failed to find HOME env variable")?;
+    let template_path = PathBuf::from(&home)
+        .join(".worklog")
+        .join("templates")
+        .join("daily.md");
+
+    // Ensure parent directory exists
+    if let Some(parent) = template_path.parent() {
+        fs::create_dir_all(parent).map_err(|e| format!("Failed to create template directory: {}", e))?;
+    }
+
     // if the template file does not exist, we should create it with the default template
-    if !PathBuf::from("templates/daily.md").exists() {
+    if !template_path.exists() {
         fs::write(
-            "templates/daily.md",
+            &template_path,
             "# {{DATE}}
 
 ## Tasks
@@ -189,7 +200,7 @@ fn from_template_file() -> Result<MarkdownFile, String> {
         .map_err(|e| format!("Failed to write template: {}", e))?;
     }
 
-    let template = fs::read_to_string("templates/daily.md")
+    let template = fs::read_to_string(&template_path)
         .map_err(|e| format!("Failed to read template: {}", e))?;
     Ok(MarkdownFile::from_string(&template))
 }
